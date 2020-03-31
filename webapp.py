@@ -37,6 +37,10 @@ def inject_logged_in():
 
 @app.route('/')
 def home():
+    if 'user_data' in session and session['user_data']['location'] == 'Carpinteria':
+        secret='cool'
+    else: 
+        secret = 'you must live in Carpinteria'
     return render_template('home.html')
 
 @app.route('/login')
