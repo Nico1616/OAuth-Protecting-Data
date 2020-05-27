@@ -50,20 +50,31 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    return render_template('message.html', message='You were logged out')
+    flash('You were logged out.', "message")
+    return render_template('home.html')
 
-@app.route()#the route should match the callback URL registered with the OAuth provider
+@app.route('/login/authorized')#the route should match the callback URL registered with the OAuth provider
 def authorized():
     resp = github.authorized_response()
     if resp is None:
         session.clear()
-        message = 'Access denied: reason=' + request.args['error'] + ' error=' + request.args['error_description'] + ' full=' + pprint.pformat(request.args)      
+        flash('Access denied: reason=' + request.args['error'] + ' error=' + request.args['error_description'] + ' full=' + pprint.pformat(request.args), "error")    
     else:
         try:
             #save user data and set log in message
+            session['github_token'] = (resp['access_token'], '')
+            session['user_data'] = github.get('user').data
+            if github.get('user').data['location'] == 'New York':
+                flash("You were successfully logged in.", "message")
+            else:
+                session.clear()
+                flash("You don't fill the requirements to log in.", "error")
         except Exception as inst:
             #clear the session and give error message
-    return render_template('message.html', message=message)
+            session.clear()
+            print(inst)
+            flash("Unable to log in. Please try again.", "error")
+    return render_template('home.html')
 
 
 @app.route('/page1')
