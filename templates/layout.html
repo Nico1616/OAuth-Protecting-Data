@@ -46,6 +46,21 @@
 
   {% block content %}{% endblock %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+		{% for category, message in messages %}
+			{% if category == "message" %}
+				{% set cls = "alert alert-success alert-dismissible" %}
+			{% elif category == "error" %}
+				{% set cls = "alert alert-danger alert-dismissible" %}
+			{% endif %}
+			<div class="{{ cls }}">{{ message }}</div>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
+
+{{ secret }}
+{% endblock %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
